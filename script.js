@@ -5,6 +5,7 @@ const form = document.getElementById("mainForm");
 const result = document.getElementById("result");
 const resetBtn = document.getElementById("resetBtn");
 const questionsDiv = document.getElementById("questions");
+const languageField = document.getElementById("languageField");
 
 chooseBtn.addEventListener("click", () => pdfInput.click());
 
@@ -28,12 +29,15 @@ resetBtn.addEventListener("click", () => {
   pdfInput.value = "";
   fileName.textContent = "Nenhum arquivo selecionado";
   questionsDiv.innerHTML = "";
+  languageField.classList.add("hidden");
   hideResult();
 });
 
 form.querySelectorAll('input[name="dia"]').forEach((radio) => {
   radio.addEventListener("change", () => {
-    generateQuestions(radio.value);
+    const diaSelecionado = radio.value;
+    languageField.classList.remove("hidden");
+    generateQuestions(diaSelecionado);
   });
 });
 
@@ -72,6 +76,8 @@ form.addEventListener("submit", async (ev) => {
 
   const selectedFile = pdfInput.files[0];
   const dia = form.querySelector('input[name="dia"]:checked');
+  const languageOption = form.querySelector('input[name="language"]:checked');
+
   if (!selectedFile) {
     alert("Selecione um arquivo PDF antes de enviar.");
     return;
@@ -81,18 +87,33 @@ form.addEventListener("submit", async (ev) => {
     return;
   }
 
+  if (languageOption === null && !languageField.classList.contains("hidden")) {
+    alert(
+      "Selecione a opção de Língua Estrangeira (Inglês, Espanhol ou Nenhum)."
+    );
+    return;
+  }
+
   const respostas = {};
   const start = dia.value === "1" ? 1 : 91;
   const end = dia.value === "1" ? 90 : 180;
   for (let i = start; i <= end; i++) {
     const checked = form.querySelector(`input[name="q${i}"]:checked`);
     if (checked) {
-      respostas[i] = checked.value.toUpperCase(); 
+      respostas[i] = checked.value.toUpperCase();
     }
   }
 
+  let finalLanguageOption;
+  
+  if (languageOption.value === "NENHUM") {
+    finalLanguageOption = null; 
+  } else {
+    finalLanguageOption = languageOption.value; 
+  }
+
   const userAnswers = {
-    languageOption: "INGLES", 
+    languageOption: finalLanguageOption,
     answers: respostas,
   };
 
