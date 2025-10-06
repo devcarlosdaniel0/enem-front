@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Upload de PDF — Formulário</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <script src="script.js" defer></script>
+
+  <main class="card">
+    <h1>Correção do ENEM</h1>
+    <p class="lead">Envie o PDF do gabarito, marque 1º ou 2º dia e responda às questões.</p>
+
+    <form id="mainForm">
+      <div class="file-row">
+        <input id="pdfInput" class="hidden" type="file" accept="application/pdf">
+        <button type="button" id="chooseBtn" class="btn">📁 Selecionar PDF</button>
+        <span id="fileName">Nenhum arquivo selecionado</span>
+      </div>
+
+      <div class="field">
+        <label>Marcar dia</label>
+        <div class="radio-group" role="radiogroup" aria-label="Escolha o dia">
+          <label><input type="radio" name="dia" value="1" /> 1º dia (questões 1–90)</label>
+          <label><input type="radio" name="dia" value="2" /> 2º dia (questões 91–180)</label>
+        </div>
+      </div>
+
+      <div id="questions" class="questions"></div>
+
+      <div style="display:flex;gap:8px;margin-top:16px;align-items:center">
+        <button type="submit" class="btn">📤 Enviar</button>
+        <button type="button" id="resetBtn" class="btn secondary">Limpar</button>
+      </div>
+
+      <div id="result" class="output hidden" aria-live="polite"></div>
+    </form>
+  </main>
+</body>
+</html>
