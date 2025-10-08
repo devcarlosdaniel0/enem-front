@@ -10,18 +10,20 @@ const languageField = document.getElementById("languageField");
 chooseBtn.addEventListener("click", () => pdfInput.click());
 
 pdfInput.addEventListener("change", () => {
-  const f = pdfInput.files[0];
-  if (!f) {
+  const file = pdfInput.files[0];
+  if (!file) {
     fileName.textContent = "Nenhum arquivo selecionado";
     return;
   }
-  if (f.type !== "application/pdf") {
+
+  if (file.type !== "application/pdf") {
     alert("Por favor envie um arquivo PDF.");
     pdfInput.value = "";
     fileName.textContent = "Nenhum arquivo selecionado";
     return;
   }
-  fileName.textContent = `${f.name} · ${(f.size / 1024).toFixed(1)} KB`;
+
+  fileName.textContent = `${file.name} · ${(file.size / 1024).toFixed(1)} KB`;
 });
 
 resetBtn.addEventListener("click", () => {
@@ -105,11 +107,11 @@ form.addEventListener("submit", async (ev) => {
   }
 
   let finalLanguageOption;
-  
+
   if (languageOption.value === "NENHUM") {
-    finalLanguageOption = null; 
+    finalLanguageOption = null;
   } else {
-    finalLanguageOption = languageOption.value; 
+    finalLanguageOption = languageOption.value;
   }
 
   const userAnswers = {
@@ -124,15 +126,23 @@ form.addEventListener("submit", async (ev) => {
     new Blob([JSON.stringify(userAnswers)], { type: "application/json" })
   );
 
-  try {
-    const response = await fetch("http://localhost:8080/api/v1/correct-exam", {
-      method: "POST",
-      body: fd,
+  fetch("http://localhost:8080/api/v1/correct-exam", {
+    method: "POST",
+    body: fd,
+  })
+    .then(async (response) => {
+      if (!response.ok) {
+        const errorData = await response.json();
+
+        const errorMessage = errorData.detail || "Erro desconhecido";
+
+        showResult(errorMessage); 
+      } else {
+        const data = await response.json();
+        showResult(data);
+      }
+    })
+    .catch((err) => {
+      showResult("Erro na requisição:", err);
     });
-    if (!response.ok) throw new Error("Erro no servidor: " + response.status);
-    const data = await response.json();
-    showResult(data);
-  } catch (err) {
-    showResult("Falha ao enviar: " + err.message);
-  }
 });
