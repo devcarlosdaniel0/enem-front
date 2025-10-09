@@ -67,6 +67,7 @@ function showResult(obj) {
   result.textContent =
     typeof obj === "string" ? obj : JSON.stringify(obj, null, 2);
 }
+
 function hideResult() {
   result.classList.add("hidden");
   result.textContent = "";
@@ -84,6 +85,7 @@ form.addEventListener("submit", async (ev) => {
     alert("Selecione um arquivo PDF antes de enviar.");
     return;
   }
+
   if (!dia) {
     alert("Marque 1º ou 2º dia.");
     return;
@@ -126,6 +128,15 @@ form.addEventListener("submit", async (ev) => {
     new Blob([JSON.stringify(userAnswers)], { type: "application/json" })
   );
 
+  const messages = {
+    QUESTION_NOT_FOUND: "As questões não foram encontradas no gabarito. Verifique se o dia está certo.",
+    PDF_PARSE_ERROR: "Ocorreu um erro ao processar o PDF.",
+    EXAM_YEAR_NOT_FOUND: "Ano da prova não encontrado no gabarito.",
+    INVALID_EXAM_YEAR: "O ano da prova é inferior ao suportado.",
+    INVALID_PARAMETERS: "Parâmetros inválidos. Verifique os campos informados.",
+    UNKNOWN_ERROR: "Erro inesperado. Tente novamente mais tarde.",
+  };
+
   fetch("http://localhost:8080/api/v1/correct-exam", {
     method: "POST",
     body: fd,
@@ -134,15 +145,16 @@ form.addEventListener("submit", async (ev) => {
       if (!response.ok) {
         const errorData = await response.json();
 
-        const errorMessage = errorData.detail || "Erro desconhecido";
+        const errorMessage = messages[errorData.errorCode] || "Erro desconhecido.";
 
-        showResult(errorMessage); 
+        showResult(errorMessage);
       } else {
         const data = await response.json();
         showResult(data);
       }
     })
     .catch((err) => {
-      showResult("Erro na requisição:", err);
+      showResult("Servidor indisponível. Tente novamente mais tarde.");
+      console.log(err);
     });
 });
