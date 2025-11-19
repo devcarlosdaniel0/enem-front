@@ -9,6 +9,10 @@ const languageField = document.getElementById("languageField");
 
 let userAnswers = JSON.parse(localStorage.getItem("userAnswers") || "{}");
 
+window.addEventListener("load", () => {
+  form.reset();
+});
+
 choosePdfBtn.addEventListener("click", () => pdfInput.click());
 
 pdfInput.addEventListener("change", () => {
