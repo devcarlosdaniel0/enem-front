@@ -60,7 +60,7 @@ function generateQuestions(dia) {
   for (let i = start; i <= end; i++) {
     const q = document.createElement("div");
     q.className = "question";
-    q.innerHTML = `<label>Questão ${i}</label>`;
+    q.innerHTML = `<label>${i}.</label>`;
 
     const answersDiv = document.createElement("div");
     answersDiv.className = "answers";
