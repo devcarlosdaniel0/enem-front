@@ -1,5 +1,4 @@
 const pdfInput = document.getElementById("pdfInput");
-const choosePdfBtn = document.getElementById("choosePdfBtn");
 const fileName = document.getElementById("fileName");
 const form = document.getElementById("mainForm");
 const result = document.getElementById("result");
@@ -12,8 +11,6 @@ let userAnswers = JSON.parse(localStorage.getItem("userAnswers") || "{}");
 window.addEventListener("load", () => {
   form.reset();
 });
-
-choosePdfBtn.addEventListener("click", () => pdfInput.click());
 
 pdfInput.addEventListener("change", () => {
   const file = pdfInput.files[0];
