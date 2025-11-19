@@ -94,3 +94,9 @@ small.hint {
   flex-wrap: wrap;
   margin-top: 6px;
 }
+.submit-area {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  align-items: center;
+}
