@@ -1,5 +1,5 @@
 const pdfInput = document.getElementById("pdfInput");
-const chooseBtn = document.getElementById("chooseBtn");
+const choosePdfBtn = document.getElementById("choosePdfBtn");
 const fileName = document.getElementById("fileName");
 const form = document.getElementById("mainForm");
 const result = document.getElementById("result");
@@ -9,7 +9,7 @@ const languageField = document.getElementById("languageField");
 
 const userAnswers = {};
 
-chooseBtn.addEventListener("click", () => pdfInput.click());
+choosePdfBtn.addEventListener("click", () => pdfInput.click());
 
 pdfInput.addEventListener("change", () => {
   const file = pdfInput.files[0];
