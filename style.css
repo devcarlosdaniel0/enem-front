@@ -100,3 +100,18 @@ small.hint {
   margin-top: 16px;
   align-items: center;
 }
+
+.option-button {
+  padding: 8px 14px;
+  margin: 3px;
+  border: 1px solid #444;
+  cursor: pointer;
+  background: #eee;
+  border-radius: 6px;
+}
+
+.option-button.selected {
+  background: #3b82f6;
+  color: white;
+  border-color: #1e60d0;
+}

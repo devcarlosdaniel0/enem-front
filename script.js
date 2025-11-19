@@ -7,6 +7,8 @@ const resetBtn = document.getElementById("resetBtn");
 const questionsDiv = document.getElementById("questions");
 const languageField = document.getElementById("languageField");
 
+const userAnswers = {};
+
 chooseBtn.addEventListener("click", () => pdfInput.click());
 
 pdfInput.addEventListener("change", () => {
@@ -47,16 +49,32 @@ function generateQuestions(dia) {
   questionsDiv.innerHTML = "";
   let start = dia === "1" ? 1 : 91;
   let end = dia === "1" ? 90 : 180;
+
   for (let i = start; i <= end; i++) {
     const q = document.createElement("div");
     q.className = "question";
     q.innerHTML = `<label>Questão ${i}</label>`;
+
     const answersDiv = document.createElement("div");
     answersDiv.className = "answers";
+
     ["A", "B", "C", "D", "E"].forEach((opt) => {
-      const id = `q${i}_${opt}`;
-      answersDiv.innerHTML += `<label><input type="radio" name="q${i}" value="${opt}" id="${id}"> ${opt}</label>`;
+      const btn = document.createElement("button");
+      btn.textContent = opt;
+      btn.type = "button";
+      btn.className = "option-button";
+
+      btn.addEventListener("click", () => {
+        answersDiv.querySelectorAll(".selected").forEach(b => b.classList.remove("selected"));
+
+        btn.classList.add("selected");
+
+        userAnswers[`${i}`] = opt;
+      });
+
+      answersDiv.appendChild(btn);
     });
+
     q.appendChild(answersDiv);
     questionsDiv.appendChild(q);
   }
@@ -101,10 +119,11 @@ form.addEventListener("submit", async (ev) => {
   const respostas = {};
   const start = dia.value === "1" ? 1 : 91;
   const end = dia.value === "1" ? 90 : 180;
+
   for (let i = start; i <= end; i++) {
-    const checked = form.querySelector(`input[name="q${i}"]:checked`);
-    if (checked) {
-      respostas[i] = checked.value.toUpperCase();
+    const resp = userAnswers[`${i}`];
+    if (resp) {
+      respostas[i] = resp.toUpperCase();
     }
   }
 
@@ -116,7 +135,7 @@ form.addEventListener("submit", async (ev) => {
     finalLanguageOption = languageOption.value;
   }
 
-  const userAnswers = {
+  const payload = {
     languageOption: finalLanguageOption,
     answers: respostas,
   };
@@ -125,15 +144,17 @@ form.addEventListener("submit", async (ev) => {
   fd.append("file", selectedFile);
   fd.append(
     "userAnswers",
-    new Blob([JSON.stringify(userAnswers)], { type: "application/json" })
+    new Blob([JSON.stringify(payload)], { type: "application/json" })
   );
 
   const messages = {
-    QUESTION_NOT_FOUND: "As questões não foram encontradas no gabarito. Verifique se o dia está certo.",
+    QUESTION_NOT_FOUND:
+      "As questões não foram encontradas no gabarito. Verifique se o dia está certo.",
     PDF_PARSE_ERROR: "Ocorreu um erro ao processar o PDF.",
     EXAM_YEAR_NOT_FOUND: "Ano da prova não encontrado no gabarito.",
     INVALID_EXAM_YEAR: "O ano da prova é inferior ao suportado.",
-    INVALID_PARAMETERS: "Parâmetros inválidos. Verifique os campos informados.",
+    INVALID_PARAMETERS:
+      "Parâmetros inválidos. Verifique os campos informados.",
     UNKNOWN_ERROR: "Erro inesperado. Tente novamente mais tarde.",
   };
 
@@ -144,9 +165,8 @@ form.addEventListener("submit", async (ev) => {
     .then(async (response) => {
       if (!response.ok) {
         const errorData = await response.json();
-
-        const errorMessage = messages[errorData.errorCode] || "Erro desconhecido.";
-
+        const errorMessage =
+          messages[errorData.errorCode] || "Erro desconhecido.";
         showResult(errorMessage);
       } else {
         const data = await response.json();
