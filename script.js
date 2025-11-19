@@ -7,7 +7,7 @@ const resetBtn = document.getElementById("resetBtn");
 const questionsDiv = document.getElementById("questions");
 const languageField = document.getElementById("languageField");
 
-const userAnswers = {};
+let userAnswers = JSON.parse(localStorage.getItem("userAnswers") || "{}");
 
 choosePdfBtn.addEventListener("click", () => pdfInput.click());
 
@@ -34,6 +34,9 @@ resetBtn.addEventListener("click", () => {
   fileName.textContent = "Nenhum arquivo selecionado";
   questionsDiv.innerHTML = "";
   languageField.classList.add("hidden");
+  userAnswers = {};
+  localStorage.removeItem("userAnswers");
+
   hideResult();
 });
 
@@ -59,20 +62,28 @@ function generateQuestions(dia) {
     answersDiv.className = "answers";
 
     ["A", "B", "C", "D", "E"].forEach((opt) => {
-      const btn = document.createElement("button");
-      btn.textContent = opt;
-      btn.type = "button";
-      btn.className = "option-button";
+      const answerBtn = document.createElement("button");
+      answerBtn.textContent = opt;
+      answerBtn.type = "button";
+      answerBtn.className = "option-button";
 
-      btn.addEventListener("click", () => {
-        answersDiv.querySelectorAll(".selected").forEach(b => b.classList.remove("selected"));
+      answerBtn.addEventListener("click", () => {
+        answersDiv
+          .querySelectorAll(".selected")
+          .forEach((b) => b.classList.remove("selected"));
 
-        btn.classList.add("selected");
+        answerBtn.classList.add("selected");
 
         userAnswers[`${i}`] = opt;
+
+        localStorage.setItem("userAnswers", JSON.stringify(userAnswers));
       });
 
-      answersDiv.appendChild(btn);
+      if (userAnswers[i] === opt) {
+        answerBtn.classList.add("selected");
+      }
+
+      answersDiv.appendChild(answerBtn);
     });
 
     q.appendChild(answersDiv);
@@ -153,8 +164,7 @@ form.addEventListener("submit", async (ev) => {
     PDF_PARSE_ERROR: "Ocorreu um erro ao processar o PDF.",
     EXAM_YEAR_NOT_FOUND: "Ano da prova não encontrado no gabarito.",
     INVALID_EXAM_YEAR: "O ano da prova é inferior ao suportado.",
-    INVALID_PARAMETERS:
-      "Parâmetros inválidos. Verifique os campos informados.",
+    INVALID_PARAMETERS: "Parâmetros inválidos. Verifique os campos informados.",
     UNKNOWN_ERROR: "Erro inesperado. Tente novamente mais tarde.",
   };
 
