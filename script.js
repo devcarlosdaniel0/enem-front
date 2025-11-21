@@ -55,30 +55,22 @@ function generateQuestions(dia) {
   let end = dia === "1" ? 90 : 180;
 
   for (let i = start; i <= end; i++) {
-    const q = document.createElement("div");
-    q.className = "question";
-    q.innerHTML = `<label>${i}.</label>`;
+    const questionDiv = document.createElement("div");
+    questionDiv.className = "question";
+    questionDiv.innerHTML = `<label>${i}.</label>`;
 
     const answersDiv = document.createElement("div");
     answersDiv.className = "answers";
+  
+    const options = ["A", "B", "C", "D", "E"];
 
-    ["A", "B", "C", "D", "E"].forEach((opt) => {
+    options.forEach((opt) => {
       const answerBtn = document.createElement("button");
       answerBtn.textContent = opt;
       answerBtn.type = "button";
       answerBtn.className = "option-button";
 
-      answerBtn.addEventListener("click", () => {
-        answersDiv
-          .querySelectorAll(".selected")
-          .forEach((b) => b.classList.remove("selected"));
-
-        answerBtn.classList.add("selected");
-
-        userAnswers[`${i}`] = opt;
-
-        localStorage.setItem("userAnswers", JSON.stringify(userAnswers));
-      });
+      makeButtonSelected(answerBtn, answersDiv, i, opt);
 
       if (userAnswers[i] === opt) {
         answerBtn.classList.add("selected");
@@ -87,9 +79,23 @@ function generateQuestions(dia) {
       answersDiv.appendChild(answerBtn);
     });
 
-    q.appendChild(answersDiv);
-    questionsDiv.appendChild(q);
+    questionDiv.appendChild(answersDiv);
+    questionsDiv.appendChild(questionDiv);
   }
+}
+
+function makeButtonSelected(answerBtn, answersDiv, i, opt) {
+  answerBtn.addEventListener("click", () => {
+    answersDiv
+      .querySelectorAll(".selected")
+      .forEach((b) => b.classList.remove("selected"));
+
+    answerBtn.classList.add("selected");
+
+    userAnswers[`${i}`] = opt;
+
+    localStorage.setItem("userAnswers", JSON.stringify(userAnswers));
+  });
 }
 
 function showResult(obj) {
