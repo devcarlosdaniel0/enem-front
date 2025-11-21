@@ -3,65 +3,90 @@ const fileName = document.getElementById("fileName");
 const form = document.getElementById("mainForm");
 const result = document.getElementById("result");
 const resetBtn = document.getElementById("resetBtn");
+const submitBtn = document.getElementById("submitBtn");
 const questionsDiv = document.getElementById("questions");
 const languageField = document.getElementById("languageField");
 
-let userAnswers = JSON.parse(localStorage.getItem("userAnswers") || "{}");
+let userAnswers = {};
+try {
+  userAnswers = JSON.parse(localStorage.getItem("userAnswers") || "{}");
+} catch (e) {
+  console.error("Erro ao ler localStorage, resetando respostas.", e);
+  localStorage.removeItem("userAnswers");
+}
 
 window.addEventListener("load", () => {
   form.reset();
 });
 
-pdfInput.addEventListener("change", () => {
+pdfInput.addEventListener("change", handleFileChange);
+
+resetBtn.addEventListener("click", handleReset);
+
+form.querySelectorAll('input[name="dia"]').forEach((radio) => {
+  radio.addEventListener("change", (e) => {
+    const diaSelecionado = e.target.value;
+    languageField.classList.remove("hidden");
+    generateQuestions(diaSelecionado);
+  });
+});
+
+form.addEventListener("submit", handleSubmit);
+
+function handleFileChange() {
   const file = pdfInput.files[0];
+
   if (!file) {
-    fileName.textContent = "Nenhum arquivo selecionado";
+    resetFileInputDisplay();
     return;
   }
 
   if (file.type !== "application/pdf") {
     alert("Por favor envie um arquivo PDF.");
     pdfInput.value = "";
-    fileName.textContent = "Nenhum arquivo selecionado";
+    resetFileInputDisplay();
     return;
   }
 
-  fileName.textContent = `${file.name} · ${(file.size / 1024).toFixed(1)} KB`;
-});
+  const sizeKB = (file.size / 1024).toFixed(1);
+  fileName.textContent = `${file.name} · ${sizeKB} KB`;
+}
 
-resetBtn.addEventListener("click", () => {
+function resetFileInputDisplay() {
+  fileName.textContent = "Nenhum arquivo selecionado";
+}
+
+function handleReset() {
   form.reset();
   pdfInput.value = "";
-  fileName.textContent = "Nenhum arquivo selecionado";
+  resetFileInputDisplay();
   questionsDiv.innerHTML = "";
   languageField.classList.add("hidden");
+
   userAnswers = {};
   localStorage.removeItem("userAnswers");
 
   hideResult();
-});
-
-form.querySelectorAll('input[name="dia"]').forEach((radio) => {
-  radio.addEventListener("change", () => {
-    const diaSelecionado = radio.value;
-    languageField.classList.remove("hidden");
-    generateQuestions(diaSelecionado);
-  });
-});
+}
 
 function generateQuestions(dia) {
   questionsDiv.innerHTML = "";
-  let start = dia === "1" ? 1 : 91;
-  let end = dia === "1" ? 90 : 180;
+  const start = dia === "1" ? 1 : 91;
+  const end = dia === "1" ? 90 : 180;
+
+  const fragment = document.createDocumentFragment();
 
   for (let i = start; i <= end; i++) {
     const questionDiv = document.createElement("div");
     questionDiv.className = "question";
-    questionDiv.innerHTML = `<label>${i}.</label>`;
+
+    const label = document.createElement("label");
+    label.textContent = `${i}.`;
+    questionDiv.appendChild(label);
 
     const answersDiv = document.createElement("div");
     answersDiv.className = "answers";
-  
+
     const options = ["A", "B", "C", "D", "E"];
 
     options.forEach((opt) => {
@@ -70,38 +95,45 @@ function generateQuestions(dia) {
       answerBtn.type = "button";
       answerBtn.className = "option-button";
 
-      makeButtonSelected(answerBtn, answersDiv, i, opt);
-
       if (userAnswers[i] === opt) {
         answerBtn.classList.add("selected");
       }
+
+      answerBtn.addEventListener("click", () =>
+        selectAnswer(answersDiv, answerBtn, i, opt)
+      );
 
       answersDiv.appendChild(answerBtn);
     });
 
     questionDiv.appendChild(answersDiv);
-    questionsDiv.appendChild(questionDiv);
+    fragment.appendChild(questionDiv);
   }
+
+  questionsDiv.appendChild(fragment);
 }
 
-function makeButtonSelected(answerBtn, answersDiv, i, opt) {
-  answerBtn.addEventListener("click", () => {
-    answersDiv
-      .querySelectorAll(".selected")
-      .forEach((b) => b.classList.remove("selected"));
+function selectAnswer(answersDiv, currentBtn, questionNumber, option) {
+  const previous = answersDiv.querySelector(".selected");
+  if (previous) {
+    previous.classList.remove("selected");
+  }
 
-    answerBtn.classList.add("selected");
+  if (previous === currentBtn) {
+    delete userAnswers[`${questionNumber}`];
+  } else {
+    currentBtn.classList.add("selected");
+    userAnswers[`${questionNumber}`] = option;
+  }
 
-    userAnswers[`${i}`] = opt;
-
-    localStorage.setItem("userAnswers", JSON.stringify(userAnswers));
-  });
+  localStorage.setItem("userAnswers", JSON.stringify(userAnswers));
 }
 
 function showResult(obj) {
   result.classList.remove("hidden");
   result.textContent =
-    typeof obj === "string" ? obj : JSON.stringify(obj, null, 2);
+    typeof obj === "object" ? JSON.stringify(obj, null, 2) : obj;
+  result.scrollIntoView({ behavior: "smooth" });
 }
 
 function hideResult() {
@@ -109,53 +141,53 @@ function hideResult() {
   result.textContent = "";
 }
 
-form.addEventListener("submit", async (ev) => {
+function setLoading(isLoading) {
+  if (submitBtn) {
+    submitBtn.disabled = isLoading;
+    submitBtn.textContent = isLoading ? "Processando..." : "Enviar Correção 📤";
+  }
+  if (isLoading) {
+    document.body.style.cursor = "wait";
+  } else {
+    document.body.style.cursor = "default";
+  }
+}
+
+async function handleSubmit(ev) {
   ev.preventDefault();
   hideResult();
 
   const selectedFile = pdfInput.files[0];
-  const dia = form.querySelector('input[name="dia"]:checked');
+  const diaInput = form.querySelector('input[name="dia"]:checked');
   const languageOption = form.querySelector('input[name="language"]:checked');
 
-  if (!selectedFile) {
-    alert("Selecione um arquivo PDF antes de enviar.");
-    return;
-  }
+  if (!selectedFile) return alert("Selecione um arquivo PDF antes de enviar.");
+  if (!diaInput) return alert("Marque 1º ou 2º dia.");
 
-  if (!dia) {
-    alert("Marque 1º ou 2º dia.");
-    return;
-  }
-
-  if (languageOption === null && !languageField.classList.contains("hidden")) {
-    alert(
+  if (!languageField.classList.contains("hidden") && !languageOption) {
+    return alert(
       "Selecione a opção de Língua Estrangeira (Inglês, Espanhol ou Nenhum)."
     );
-    return;
   }
 
-  const respostas = {};
-  const start = dia.value === "1" ? 1 : 91;
-  const end = dia.value === "1" ? 90 : 180;
+  const start = diaInput.value === "1" ? 1 : 91;
+  const end = diaInput.value === "1" ? 90 : 180;
+  const respostasFiltradas = {};
 
   for (let i = start; i <= end; i++) {
-    const resp = userAnswers[`${i}`];
-    if (resp) {
-      respostas[i] = resp.toUpperCase();
+    if (userAnswers[`${i}`]) {
+      respostasFiltradas[i] = userAnswers[`${i}`].toUpperCase();
     }
   }
 
-  let finalLanguageOption;
-
-  if (languageOption.value === "NENHUM") {
-    finalLanguageOption = null;
-  } else {
-    finalLanguageOption = languageOption.value;
-  }
+  const finalLanguageOption =
+    languageOption && languageOption.value !== "NENHUM"
+      ? languageOption.value
+      : null;
 
   const payload = {
     languageOption: finalLanguageOption,
-    answers: respostas,
+    answers: respostasFiltradas,
   };
 
   const fd = new FormData();
@@ -165,33 +197,39 @@ form.addEventListener("submit", async (ev) => {
     new Blob([JSON.stringify(payload)], { type: "application/json" })
   );
 
-  const messages = {
-    QUESTION_NOT_FOUND:
-      "As questões não foram encontradas no gabarito. Verifique se o dia está certo.",
-    PDF_PARSE_ERROR: "Ocorreu um erro ao processar o PDF.",
-    EXAM_YEAR_NOT_FOUND: "Ano da prova não encontrado no gabarito.",
-    INVALID_EXAM_YEAR: "O ano da prova é inferior ao suportado.",
-    INVALID_PARAMETERS: "Parâmetros inválidos. Verifique as alternativas estão marcadas.",
-    UNKNOWN_ERROR: "Erro inesperado. Tente novamente mais tarde.",
-  };
+  setLoading(true);
 
-  fetch("http://localhost:8080/api/v1/correct-exam", {
-    method: "POST",
-    body: fd,
-  })
-    .then(async (response) => {
-      if (!response.ok) {
-        const errorData = await response.json();
-        const errorMessage =
-          messages[errorData.errorCode] || "Erro desconhecido.";
-        showResult(errorMessage);
-      } else {
-        const data = await response.json();
-        showResult(data);
-      }
-    })
-    .catch((err) => {
-      showResult("Servidor indisponível. Tente novamente mais tarde.");
-      console.log(err);
+  try {
+    const response = await fetch("http://localhost:8080/api/v1/correct-exam", {
+      method: "POST",
+      body: fd,
     });
-});
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const messages = {
+        QUESTION_NOT_FOUND:
+          "As questões não foram encontradas no gabarito. Verifique se o dia está certo.",
+        PDF_PARSE_ERROR: "Ocorreu um erro ao processar o PDF.",
+        EXAM_YEAR_NOT_FOUND: "Ano da prova não encontrado no gabarito.",
+        INVALID_EXAM_YEAR: "O ano da prova é inferior ao suportado.",
+        INVALID_PARAMETERS:
+          "Parâmetros inválidos. Verifique as alternativas estão marcadas.",
+        UNKNOWN_ERROR: "Erro inesperado. Tente novamente mais tarde.",
+      };
+      throw new Error(
+        messages[errorData.errorCode] ||
+          errorData.message ||
+          "Erro desconhecido no servidor."
+      );
+    }
+
+    const data = await response.json();
+    showResult(data);
+  } catch (err) {
+    console.error(err);
+    showResult(err.message || "Servidor indisponível. Tente novamente.");
+  } finally {
+    setLoading(false);
+  }
+}
