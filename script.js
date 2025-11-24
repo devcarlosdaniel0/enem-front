@@ -141,18 +141,6 @@ function hideResult() {
   result.textContent = "";
 }
 
-function setLoading(isLoading) {
-  if (submitBtn) {
-    submitBtn.disabled = isLoading;
-    submitBtn.textContent = isLoading ? "Processando..." : "Enviar Correção 📤";
-  }
-  if (isLoading) {
-    document.body.style.cursor = "wait";
-  } else {
-    document.body.style.cursor = "default";
-  }
-}
-
 async function handleSubmit(ev) {
   ev.preventDefault();
   hideResult();
@@ -197,8 +185,6 @@ async function handleSubmit(ev) {
     new Blob([JSON.stringify(payload)], { type: "application/json" })
   );
 
-  setLoading(true);
-
   try {
     const response = await fetch("http://localhost:8080/api/v1/correct-exam", {
       method: "POST",
@@ -229,7 +215,5 @@ async function handleSubmit(ev) {
   } catch (err) {
     console.error(err);
     showResult(err.message || "Servidor indisponível. Tente novamente.");
-  } finally {
-    setLoading(false);
-  }
+  } 
 }
