@@ -17,7 +17,6 @@ body {
   border-radius: 12px;
   box-shadow: 0 6px 20px rgba(20, 30, 60, 0.08);
   width: 100%;
-  max-width: 960px;
   overflow-y: auto;
   max-height: 95vh;
 }
