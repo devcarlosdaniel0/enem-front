@@ -93,11 +93,8 @@ function generateQuestions(dia) {
       const answerBtn = document.createElement("button");
       answerBtn.textContent = opt;
       answerBtn.type = "button";
-      answerBtn.className = "option-button";
-
-      if (userAnswers[i] === opt) {
-        answerBtn.classList.add("selected");
-      }
+      answerBtn.className =
+        userAnswers[i] === opt ? "option-button selected" : "option-button";
 
       answerBtn.addEventListener("click", () =>
         selectAnswer(answersDiv, answerBtn, i, opt)
@@ -120,10 +117,10 @@ function selectAnswer(answersDiv, currentBtn, questionNumber, option) {
   }
 
   if (previous === currentBtn) {
-    delete userAnswers[`${questionNumber}`];
+    delete userAnswers[questionNumber];
   } else {
     currentBtn.classList.add("selected");
-    userAnswers[`${questionNumber}`] = option;
+    userAnswers[questionNumber] = option;
   }
 
   localStorage.setItem("userAnswers", JSON.stringify(userAnswers));
@@ -215,5 +212,5 @@ async function handleSubmit(ev) {
   } catch (err) {
     console.error(err);
     showResult(err.message || "Servidor indisponível. Tente novamente.");
-  } 
+  }
 }
