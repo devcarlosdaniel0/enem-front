@@ -16,21 +16,21 @@
     <form id="mainForm">
       <div class="file-row">
         <input id="pdfInput" class="hidden" type="file" accept="application/pdf">
-        <label for="pdfInput" id="choosePdfBtn" class="btn">📁 Selecionar PDF</label>
+        <label for="pdfInput" class="btn">📁 Selecionar PDF</label>
         <span id="fileName">Nenhum arquivo selecionado</span>
       </div>
 
       <div class="field">
         <label>Marcar dia</label>
-        <div class="radio-group" role="radiogroup" aria-label="Escolha o dia">
+        <div class="radio-group" role="radiogroup">
           <label><input type="radio" name="dia" value="1" required/> 1º dia (questões 1–90)</label>
           <label><input type="radio" name="dia" value="2" required/> 2º dia (questões 91–180)</label>
         </div>
       </div>
 
       <div id="languageField" class="field hidden">
-        <label>Língua Estrangeira (Questões 1 a 5)</label>
-        <div class="radio-group" role="radiogroup" aria-label="Escolha a língua estrangeira">
+        <label>Língua Estrangeira (5 primeiras questões)</label>
+        <div class="radio-group" role="radiogroup">
           <label><input type="radio" name="language" value="INGLES" required/> Inglês</label>
           <label><input type="radio" name="language" value="ESPANHOL" required/> Espanhol</label>
           <label><input type="radio" name="language" value="NENHUM" required/> Nenhum (se não for prova de Linguagens)</label>
