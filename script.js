@@ -8,11 +8,32 @@ const questionsDiv = document.getElementById("questions");
 const languageField = document.getElementById("languageField");
 
 let userAnswers = {};
-try {
-  userAnswers = JSON.parse(localStorage.getItem("userAnswers") || "{}");
-} catch (e) {
-  console.error("Erro ao ler localStorage, resetando respostas.", e);
-  localStorage.removeItem("userAnswers");
+
+function initializeAnswers() {
+  try {
+    const stored = localStorage.getItem("userAnswers");
+    if (stored) {
+      userAnswers = JSON.parse(stored);
+    }
+  } catch (e) {
+    console.error("Erro ao ler localStorage, resetando respostas.", e);
+    localStorage.removeItem("userAnswers");
+    userAnswers = {};
+  }
+}
+
+initializeAnswers();
+
+let saveTimeout;
+function saveAnswersDebounced() {
+  clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(() => {
+    try {
+      localStorage.setItem("userAnswers", JSON.stringify(userAnswers));
+    } catch (e) {
+      console.error("Erro ao salvar respostas", e);
+    }
+  }, 300);
 }
 
 window.addEventListener("load", () => {
@@ -23,12 +44,12 @@ pdfInput.addEventListener("change", handleFileChange);
 
 resetBtn.addEventListener("click", handleReset);
 
-form.querySelectorAll('input[name="dia"]').forEach((radio) => {
-  radio.addEventListener("change", (e) => {
+form.addEventListener("change", (e) => {
+  if (e.target.name === "dia") {
     const diaSelecionado = e.target.value;
     languageField.classList.remove("hidden");
     generateQuestions(diaSelecionado);
-  });
+  }
 });
 
 form.addEventListener("submit", handleSubmit);
@@ -70,60 +91,60 @@ function handleReset() {
 }
 
 function generateQuestions(dia) {
-  questionsDiv.innerHTML = "";
   const start = dia === "1" ? 1 : 91;
   const end = dia === "1" ? 90 : 180;
 
-  const fragment = document.createDocumentFragment();
+  const questionsHTML = [];
 
   for (let i = start; i <= end; i++) {
-    const questionDiv = document.createElement("div");
-    questionDiv.className = "question";
-
-    const label = document.createElement("label");
-    label.textContent = `${i}.`;
-    questionDiv.appendChild(label);
-
-    const answersDiv = document.createElement("div");
-    answersDiv.className = "answers";
-
+    const selectedOption = userAnswers[i];
     const options = ["A", "B", "C", "D", "E"];
 
-    options.forEach((opt) => {
-      const answerBtn = document.createElement("button");
-      answerBtn.textContent = opt;
-      answerBtn.type = "button";
-      answerBtn.className =
-        userAnswers[i] === opt ? "option-button selected" : "option-button";
+    const buttonsHTML = options
+      .map(
+        (opt) =>
+          `<button type="button" class="option-button${
+            selectedOption === opt ? " selected" : ""
+          }" data-question="${i}" data-option="${opt}">${opt}</button>`
+      )
+      .join("");
 
-      answerBtn.addEventListener("click", () =>
-        selectAnswer(answersDiv, answerBtn, i, opt)
-      );
-
-      answersDiv.appendChild(answerBtn);
-    });
-
-    questionDiv.appendChild(answersDiv);
-    fragment.appendChild(questionDiv);
+    questionsHTML.push(`
+      <div class="question">
+        <label>${i}.</label>
+        <div class="answers">
+          ${buttonsHTML}
+        </div>
+      </div>
+    `);
   }
 
-  questionsDiv.appendChild(fragment);
+  questionsDiv.innerHTML = questionsHTML.join('');
+
+  questionsDiv.addEventListener("click", handleAnswerClick);
 }
 
-function selectAnswer(answersDiv, currentBtn, questionNumber, option) {
+function handleAnswerClick(e) {
+  const btn = e.target.closest(".option-button");
+  if (!btn) return;
+
+  const questionNumber = btn.dataset.question;
+  const option = btn.dataset.option;
+  const answersDiv = btn.parentElement;
+
   const previous = answersDiv.querySelector(".selected");
   if (previous) {
     previous.classList.remove("selected");
   }
 
-  if (previous === currentBtn) {
+  if (previous === btn) {
     delete userAnswers[questionNumber];
   } else {
-    currentBtn.classList.add("selected");
+    btn.classList.add("selected");
     userAnswers[questionNumber] = option;
   }
 
-  localStorage.setItem("userAnswers", JSON.stringify(userAnswers));
+  saveAnswersDebounced();
 }
 
 function showResult(obj) {
