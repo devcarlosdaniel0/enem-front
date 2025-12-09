@@ -130,3 +130,138 @@ label {
   margin-top: 1rem;
   align-items: center;
 }
+
+#result {
+  font-family: Arial, Helvetica, sans-serif; 
+  white-space: normal; 
+  color: #333;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  padding: 1.5rem;
+  border-radius: 10px;
+}
+.result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #f0f4f8;
+  padding-bottom: 1rem;
+}
+.result-header h2 {
+  font-size: 1.8rem;
+  color: #0b76ff;
+  margin: 0;
+}
+
+
+.counts-summary {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+.count-card {
+  flex: 1;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  min-width: 150px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.count-card h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  color: #475569;
+}
+.count-card p {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.count-correct {
+  background: #dcfce7; 
+  color: #15803d; 
+}
+.count-wrong {
+  background: #fee2e2; 
+  color: #b91c1c;
+}
+.count-answered {
+  background: #f0f4f8; 
+  color: #475569; 
+}
+.count-canceled {
+  background: #fffbeb; 
+  color: #a16207; 
+}
+.result-details h3 {
+  font-size: 1.4rem;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  color: #1e293b;
+}
+.error-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+.error-item, .canceled-item {
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  font-size: 0.95rem;
+}
+.error-item {
+  background: #fef2f2;
+}
+.canceled-item {
+  background: #fffdf5;
+}
+
+.question-number {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #0b76ff;
+}
+.answers-compare {
+  display: flex;
+  gap: 10px;
+}
+.answer-box {
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  font-weight: bold;
+  text-align: center;
+  flex-grow: 1;
+}
+.your-answer {
+  background: #fca5a5; 
+  color: #7f1d1d;
+}
+.correct-answer {
+  background: #a7f3d0; 
+  color: #065f46;
+}
+.canceled-answer {
+  background: #fde68a; 
+  color: #92400e;
+}
+
+@media (max-width: 900px) {
+  .card {
+    width: 85%;
+  }
+}
+
+@media (max-width: 600px) {
+  .error-list {
+    grid-template-columns: 1fr;
+  }
+}
