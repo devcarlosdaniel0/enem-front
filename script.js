@@ -9,6 +9,17 @@ const languageField = document.getElementById("languageField");
 
 let userAnswers = {};
 
+const ERROR_MESSAGES = {
+  QUESTION_NOT_FOUND:
+    "As questões não foram encontradas no gabarito. Verifique se o dia está certo.",
+  PDF_PARSE_ERROR: "Ocorreu um erro ao processar o PDF.",
+  EXAM_YEAR_NOT_FOUND: "Ano da prova não encontrado no gabarito.",
+  INVALID_EXAM_YEAR: "O ano da prova é inferior ao suportado.",
+  INVALID_PARAMETERS:
+    "Parâmetros inválidos. Verifique as alternativas estão marcadas.",
+  UNKNOWN_ERROR: "Erro inesperado. Tente novamente mais tarde.",
+};
+
 function initializeAnswers() {
   try {
     const stored = localStorage.getItem("userAnswers");
@@ -326,18 +337,9 @@ async function handleSubmit(ev) {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      const messages = {
-        QUESTION_NOT_FOUND:
-          "As questões não foram encontradas no gabarito. Verifique se o dia está certo.",
-        PDF_PARSE_ERROR: "Ocorreu um erro ao processar o PDF.",
-        EXAM_YEAR_NOT_FOUND: "Ano da prova não encontrado no gabarito.",
-        INVALID_EXAM_YEAR: "O ano da prova é inferior ao suportado.",
-        INVALID_PARAMETERS:
-          "Parâmetros inválidos. Verifique as alternativas estão marcadas.",
-        UNKNOWN_ERROR: "Erro inesperado. Tente novamente mais tarde.",
-      };
+
       throw new Error(
-        messages[errorData.errorCode] ||
+        ERROR_MESSAGES[errorData.errorCode] ||
           errorData.message ||
           "Erro desconhecido no servidor."
       );
@@ -346,7 +348,10 @@ async function handleSubmit(ev) {
     const data = await response.json();
     showResult(data);
   } catch (err) {
-    console.error(err);
-    showError(err.message || "Servidor indisponível. Tente novamente.");
+    if (err instanceof TypeError) {
+      showError("Servidor indisponível. Tente novamente.");
+    } else {
+      showError(err.message || "Erro inesperado.");
+    }
   }
 }
