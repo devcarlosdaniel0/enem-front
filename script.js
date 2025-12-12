@@ -347,6 +347,6 @@ async function handleSubmit(ev) {
     showResult(data);
   } catch (err) {
     console.error(err);
-    showResult(err.message || "Servidor indisponível. Tente novamente.");
+    showError(err.message || "Servidor indisponível. Tente novamente.");
   }
 }
