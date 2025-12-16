@@ -11,12 +11,16 @@ export function handleSubmit(elements) {
     const selectedFile = pdfInput.files[0];
     const diaInput = form.querySelector('input[name="dia"]:checked');
     const languageOption = form.querySelector('input[name="language"]:checked');
+    const yearInput = form.querySelector('input[name="manualExamYear"]');
+
+    const manualExamYear = yearInput.value.trim() ? Number(yearInput.value) : null;
 
     let verified = verifyFormElements(
       selectedFile,
       diaInput,
       languageField,
-      languageOption
+      languageOption,
+      manualExamYear
     );
 
     if (verified === false) {
@@ -31,6 +35,7 @@ export function handleSubmit(elements) {
     const payload = {
       languageOption: finalLanguageOption,
       answers: filteredAnswers,
+      manualExamYear,
     };
 
     const fd = new FormData();
@@ -71,7 +76,8 @@ function verifyFormElements(
   selectedFile,
   diaInput,
   languageField,
-  languageOption
+  languageOption,
+  manualExamYear
 ) {
 
   if (!selectedFile) {
@@ -89,6 +95,14 @@ function verifyFormElements(
       "Selecione a opção de Língua Estrangeira (Inglês, Espanhol ou Nenhum)."
     );
     return false;
+  }
+
+  if (manualExamYear) {
+    const currentYear = new Date().getFullYear();
+    if (manualExamYear < 2011 || manualExamYear > currentYear + 1) {
+      alert("Por favor, insira um ano válido entre 2011 e " + (currentYear + 1));
+      return false;
+    }
   }
 
   return true;

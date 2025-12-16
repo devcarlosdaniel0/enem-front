@@ -13,6 +13,7 @@ const elements = {
   questionsDiv: document.getElementById("questions"),
   submitBtn: document.getElementById("submitBtn"),
   languageField: document.getElementById("languageField"),
+  manualExamYear: document.getElementById("manualExamYear"),
 };
 
 initializeAnswers();
@@ -38,3 +39,7 @@ elements.form.addEventListener("change", (e) => {
 });
 
 elements.form.addEventListener("submit", handleSubmit(elements));
+
+const currentYear = new Date().getFullYear();
+elements.manualExamYear.min = 2011;
+elements.manualExamYear.max = currentYear + 1;
