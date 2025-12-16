@@ -38,5 +38,3 @@ elements.form.addEventListener("change", (e) => {
 });
 
 elements.form.addEventListener("submit", handleSubmit(elements));
-
-console.log(userAnswers);

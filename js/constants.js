@@ -6,5 +6,5 @@ export const ERROR_MESSAGES = {
   INVALID_EXAM_YEAR: "O ano da prova é inferior ao suportado.",
   INVALID_PARAMETERS:
     "Parâmetros inválidos. Verifique as alternativas estão marcadas.",
-  UNKNOWN_ERROR: "Erro inesperado. Tente novamente mais tarde.",
+  UNKNOWN_ERROR: "Erro desconhecido. Tente novamente mais tarde.",
 };

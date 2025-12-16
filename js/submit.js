@@ -8,44 +8,29 @@ export function handleSubmit(elements) {
 
     const { pdfInput, form, languageField, result } = elements;
 
-    hideResult(result);
-
     const selectedFile = pdfInput.files[0];
     const diaInput = form.querySelector('input[name="dia"]:checked');
     const languageOption = form.querySelector('input[name="language"]:checked');
 
-    if (!selectedFile) {
-      return alert("Selecione um arquivo PDF antes de enviar.");
+    let verified = verifyFormElements(
+      selectedFile,
+      diaInput,
+      languageField,
+      languageOption
+    );
+
+    if (verified === false) {
+      return;
     }
 
-    if (!diaInput) {
-      return alert("Marque 1º ou 2º dia.");
-    }
+    hideResult(result);
 
-    if (!languageField.classList.contains("hidden") && !languageOption) {
-      return alert(
-        "Selecione a opção de Língua Estrangeira (Inglês, Espanhol ou Nenhum)."
-      );
-    }
-
-    const start = diaInput.value === "1" ? 1 : 91;
-    const end = diaInput.value === "1" ? 90 : 180;
-    const respostasFiltradas = {};
-
-    for (let i = start; i <= end; i++) {
-      if (userAnswers[i]) {
-        respostasFiltradas[i] = userAnswers[i].toUpperCase();
-      }
-    }
-
-    const finalLanguageOption =
-      languageOption && languageOption.value !== "NENHUM"
-        ? languageOption.value
-        : null;
+    const finalLanguageOption = getFinalLanguageOption(languageOption);
+    const filteredAnswers = getFilteredAnswers(diaInput);
 
     const payload = {
       languageOption: finalLanguageOption,
-      answers: respostasFiltradas,
+      answers: filteredAnswers,
     };
 
     const fd = new FormData();
@@ -76,12 +61,63 @@ export function handleSubmit(elements) {
 
       const data = await response.json();
       showResult(data, result);
-    } catch (err) {
-      if (err instanceof TypeError) {
-        showError("Servidor indisponível. Tente novamente.", result);
-      } else {
-        showError(err.message || "Erro inesperado.", result);
-      }
+    } catch (error) {
+      handleCatchError(error, result);
     }
   };
+}
+
+function verifyFormElements(
+  selectedFile,
+  diaInput,
+  languageField,
+  languageOption
+) {
+
+  if (!selectedFile) {
+    alert("Selecione um arquivo PDF antes de enviar.");
+    return false;
+  }
+
+  if (!diaInput) {
+    alert("Marque 1º ou 2º dia.");
+    return false;
+  }
+
+  if (!languageField.classList.contains("hidden") && !languageOption) {
+    alert(
+      "Selecione a opção de Língua Estrangeira (Inglês, Espanhol ou Nenhum)."
+    );
+    return false;
+  }
+
+  return true;
+}
+
+function getFinalLanguageOption(languageOption) {
+  const finalLanguageOption =
+    languageOption.value !== "NENHUM" ? languageOption.value : null;
+
+  return finalLanguageOption;
+}
+
+function getFilteredAnswers(diaInput) {
+  const [start, end] = diaInput.value === "1" ? [1, 90] : [91, 180];
+  const filteredAnswers = {};
+
+  for (let i = start; i <= end; i++) {
+    if (userAnswers[i]) {
+      filteredAnswers[i] = userAnswers[i].toUpperCase();
+    }
+  }
+
+  return filteredAnswers;
+}
+
+function handleCatchError(error, result) {
+  if (error instanceof TypeError) {
+    showError("Servidor indisponível. Tente novamente.", result);
+  } else {
+    showError(error.message || "Erro inesperado.", result);
+  }
 }
