@@ -10,14 +10,12 @@ export function generateQuestions(dia, questionsDiv) {
     const selectedOption = userAnswers[i];
     const options = ["A", "B", "C", "D", "E"];
 
-    const buttonsHTML = options
-      .map(
-        (opt) =>
-          `<button type="button" class="option-button${
-            selectedOption === opt ? " selected" : ""
-          }" data-question="${i}" data-option="${opt}">${opt}</button>`
-      )
-      .join("");
+    const buttonsHTML = options.map((opt) => 
+      `
+      <button type="button" class="option-button${selectedOption === opt ? " selected" : ""}" 
+      data-question="${i}" data-option="${opt}">${opt}</button>
+      `
+    ).join("");
 
     questionsHTML.push(`
       <div class="question">
@@ -30,8 +28,6 @@ export function generateQuestions(dia, questionsDiv) {
   }
 
   questionsDiv.innerHTML = questionsHTML.join("");
-
-  questionsDiv.addEventListener("click", handleAnswerClick);
 }
 
 export function handleAnswerClick(e) {
@@ -40,9 +36,10 @@ export function handleAnswerClick(e) {
 
   const questionNumber = btn.dataset.question;
   const option = btn.dataset.option;
-  const answersDiv = btn.parentElement;
 
+  const answersDiv = btn.parentElement;
   const previous = answersDiv.querySelector(".selected");
+
   if (previous) {
     previous.classList.remove("selected");
   }

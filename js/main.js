@@ -1,7 +1,7 @@
 import { initializeAnswers, userAnswers } from "./state.js";
 import { handleFileChange } from "./fileHandler.js";
 import { handleReset } from "./state.js";
-import { generateQuestions } from "./questions.js";
+import { generateQuestions, handleAnswerClick } from "./questions.js";
 import { handleSubmit } from "./submit.js";
 
 const elements = {
@@ -26,6 +26,8 @@ elements.pdfInput.addEventListener("change", () => {
 });
 
 elements.resetBtn.addEventListener("click", handleReset(elements));
+
+elements.questionsDiv.addEventListener("click", handleAnswerClick);
 
 elements.form.addEventListener("change", (e) => {
   if (e.target.name === "dia") {
