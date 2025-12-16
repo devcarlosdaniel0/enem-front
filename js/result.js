@@ -114,8 +114,8 @@ export function showError(message, result) {
         <div class="result-header">
             <h2>Ops! Ocorreu um erro.</h2>
         </div>
-        <p style="font-weight: bold; color: #b91c1c;">${message}</p>
-        <p style="font-size: 0.9em; margin-top: 15px;">Tente reenviar ou verifique o arquivo e o dia selecionado.</p>
+        <p id="errorMessage">${message}</p>
+        <p id="errorReupload">Tente reenviar ou verifique o arquivo e o dia selecionado.</p>
     `;
   result.scrollIntoView({ behavior: "smooth" });
 }
