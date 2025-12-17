@@ -10,6 +10,6 @@ export const ERROR_MESSAGES = {
 };
 
 export const API = {
-  BASE_URL: "http://localhost:8080",
+  BASE_URL: "https://enem-icih.onrender.com",
   CORRECT_EXAM: "/api/v1/correct-exam",
 };
