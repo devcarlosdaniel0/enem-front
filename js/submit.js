@@ -6,7 +6,7 @@ export function handleSubmit(elements) {
   return async function (ev) {
     ev.preventDefault();
 
-    const { pdfInput, dayField, languageField, manualExamYearField, result } = elements;
+    const { pdfInput, dayField, languageField, manualExamYearField, result, submitBtn } = elements;
 
     const selectedFile = pdfInput.files[0];
     const dayOption = dayField.querySelector('input[name="dia"]:checked');
@@ -46,6 +46,9 @@ export function handleSubmit(elements) {
     );
 
     try {
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Processando...";
+
       const response = await fetch(
         "http://localhost:8080/api/v1/correct-exam",
         {
@@ -66,6 +69,9 @@ export function handleSubmit(elements) {
       showResult(data, result);
     } catch (error) {
       handleCatchError(error, result);
+    } finally {
+      submitBtn.disabled = false; 
+      submitBtn.textContent = "Enviar Correção 📤";
     }
   };
 }
