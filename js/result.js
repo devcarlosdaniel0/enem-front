@@ -1,9 +1,3 @@
-function sanitizeHTML(text) {
-  const div = document.createElement('div');
-  div.textContent = String(text || '');
-  return div.innerHTML;
-}
-
 export function showResult(data, result) {
   result.classList.remove("hidden");
   result.scrollIntoView({ behavior: "smooth" });
@@ -46,19 +40,19 @@ function createCountsSummary({ correctCount, wrongCount, totalCanceled, totalAns
     <div class="counts-summary">
       <div class="count-card count-correct">
         <h3>Acertos ✅</h3>
-        <p>${sanitizeHTML(correctCount)}</p>
+        <p>${correctCount}</p>
       </div>
       <div class="count-card count-wrong">
         <h3>Erros ❌</h3>
-        <p>${sanitizeHTML(wrongCount)}</p>
+        <p>${wrongCount}</p>
       </div>
       <div class="count-card count-canceled">
         <h3>Anuladas 🚫</h3>
-        <p>${sanitizeHTML(totalCanceled)}</p>
+        <p>${totalCanceled}</p>
       </div>
       <div class="count-card count-answered">
         <h3>Respondidas 📝</h3>
-        <p>${sanitizeHTML(totalAnswered)} de ${sanitizeHTML(totalQuestions)}</p>
+        <p>${totalAnswered} de ${totalQuestions}</p>
       </div>
     </div>
   `;
@@ -72,10 +66,10 @@ function createErrorsList(wrongAnswers, expectedAnswers, wrongCount) {
   const errorItems = errorQuestionNumbers
     .map((qNum) => `
       <li class="error-item">
-        <div class="question-number">Questão ${sanitizeHTML(qNum)}</div>
+        <div class="question-number">Questão ${qNum}</div>
         <div class="answers-compare">
-          <span class="answer-box your-answer">Sua: ${sanitizeHTML(wrongAnswers[qNum])}</span>
-          <span class="answer-box correct-answer">Correta: ${sanitizeHTML(expectedAnswers[qNum])}</span>
+          <span class="answer-box your-answer">Sua: ${wrongAnswers[qNum]}</span>
+          <span class="answer-box correct-answer">Correta: ${expectedAnswers[qNum]}</span>
         </div>
       </li>
     `)
@@ -83,7 +77,7 @@ function createErrorsList(wrongAnswers, expectedAnswers, wrongCount) {
 
   return `
     <div class="result-details">
-      <h3>Questões que Você Errou (${sanitizeHTML(wrongCount)})</h3>
+      <h3>Questões que Você Errou (${wrongCount})</h3>
       <ul class="error-list">${errorItems}</ul>
     </div>
   `;
@@ -97,7 +91,7 @@ function createCanceledList(cancelledQuestions, totalCanceled) {
   const canceledItems = canceledQuestionNumbers
     .map((qNum) => `
       <li class="canceled-item">
-        <div class="question-number">Questão ${sanitizeHTML(qNum)}</div>
+        <div class="question-number">Questão ${qNum}</div>
         <div class="answers-compare">
           <span class="answer-box canceled-answer">STATUS: ANULADA</span>
         </div>
@@ -107,7 +101,7 @@ function createCanceledList(cancelledQuestions, totalCanceled) {
 
   return `
     <div class="result-details">
-      <h3>Questões Anuladas (${sanitizeHTML(totalCanceled)})</h3>
+      <h3>Questões Anuladas (${totalCanceled})</h3>
       <ul class="error-list">${canceledItems}</ul>
     </div>
   `;
@@ -120,7 +114,7 @@ export function showError(message, result) {
         <div class="result-header">
             <h2>Ops! Ocorreu um erro.</h2>
         </div>
-        <p id="errorMessage">${sanitizeHTML(message)}</p>
+        <p id="errorMessage">${message}</p>
         <p id="errorReupload">Tente reenviar ou verifique o arquivo e o dia selecionado.</p>
     `;
   result.scrollIntoView({ behavior: "smooth" });
