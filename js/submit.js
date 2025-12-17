@@ -58,9 +58,7 @@ export function handleSubmit(elements) {
         const errorData = await response.json().catch(() => ({}));
 
         throw new Error(
-          ERROR_MESSAGES[errorData.errorCode] ||
-            errorData.message ||
-            "Erro desconhecido no servidor."
+          ERROR_MESSAGES[errorData.errorCode] || "Erro desconhecido no servidor."
         );
       }
 
@@ -79,10 +77,14 @@ function verifyFormElements(
   languageOption,
   manualExamYear
 ) {
-
   if (!selectedFile) {
     alert("Selecione um arquivo PDF antes de enviar.");
     return false;
+  }
+
+  if (selectedFile.size > 1024 * 1024) { 
+    alert("Arquivo muito grande. Máximo 1MB."); 
+    return false; 
   }
 
   if (!dayOption) {
