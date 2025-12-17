@@ -12,8 +12,9 @@ const elements = {
   resetBtn: document.getElementById("resetBtn"),
   questionsDiv: document.getElementById("questions"),
   submitBtn: document.getElementById("submitBtn"),
+  dayField: document.getElementById("dayField"),
   languageField: document.getElementById("languageField"),
-  manualExamYear: document.getElementById("manualExamYear"),
+  manualExamYearField: document.getElementById("manualExamYearField"),
 };
 
 initializeAnswers();
@@ -23,7 +24,7 @@ window.addEventListener("load", () => {
 });
 
 elements.pdfInput.addEventListener("change", () => {
-  handleFileChange(elements.pdfInput, elements.fileName)
+  handleFileChange(elements.pdfInput, elements.fileName);
 });
 
 elements.resetBtn.addEventListener("click", handleReset(elements));
@@ -33,7 +34,9 @@ elements.questionsDiv.addEventListener("click", handleAnswerClick);
 elements.form.addEventListener("change", (e) => {
   if (e.target.name === "dia") {
     const diaSelecionado = e.target.value;
+    
     elements.languageField.classList.remove("hidden");
+    elements.manualExamYearField.classList.remove("hidden");
     generateQuestions(diaSelecionado, elements.questionsDiv);
   }
 });
@@ -41,5 +44,7 @@ elements.form.addEventListener("change", (e) => {
 elements.form.addEventListener("submit", handleSubmit(elements));
 
 const currentYear = new Date().getFullYear();
-elements.manualExamYear.min = 2011;
-elements.manualExamYear.max = currentYear + 1;
+const yearInput = manualExamYearField.querySelector('input[name="manualExamYear"]');
+
+yearInput.min = 2011;
+yearInput.max = currentYear + 1;

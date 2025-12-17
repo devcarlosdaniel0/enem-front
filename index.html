@@ -20,7 +20,7 @@
         <span id="fileName">Nenhum arquivo selecionado</span>
       </div>
 
-      <div class="field">
+      <div id="dayField" class="field">
         <label>Marcar dia</label>
         <div class="radio-group" role="radiogroup">
           <label><input type="radio" name="dia" value="1" required/> 1º dia (questões 1–90)</label>
@@ -37,9 +37,9 @@
         </div>
       </div>
 
-      <div class="field">
+      <div id="manualExamYearField" class="field hidden">
         <label for="manualExamYear">Digite o ano da prova, caso não encontrado</label>
-        <input id="manualExamYear" name="manualExamYear" type="number">
+        <input name="manualExamYear" type="number">
       </div>
       
       <div id="questions" class="questions"></div>

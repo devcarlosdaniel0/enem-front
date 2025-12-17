@@ -6,18 +6,18 @@ export function handleSubmit(elements) {
   return async function (ev) {
     ev.preventDefault();
 
-    const { pdfInput, form, languageField, result } = elements;
+    const { pdfInput, dayField, languageField, manualExamYearField, result } = elements;
 
     const selectedFile = pdfInput.files[0];
-    const diaInput = form.querySelector('input[name="dia"]:checked');
-    const languageOption = form.querySelector('input[name="language"]:checked');
-    const yearInput = form.querySelector('input[name="manualExamYear"]');
+    const dayOption = dayField.querySelector('input[name="dia"]:checked');
+    const languageOption = languageField.querySelector('input[name="language"]:checked');
+    const yearInput = manualExamYearField.querySelector('input[name="manualExamYear"]');
 
     const manualExamYear = yearInput.value.trim() ? Number(yearInput.value) : null;
 
     let verified = verifyFormElements(
       selectedFile,
-      diaInput,
+      dayOption,
       languageField,
       languageOption,
       manualExamYear
@@ -30,7 +30,7 @@ export function handleSubmit(elements) {
     hideResult(result);
 
     const finalLanguageOption = getFinalLanguageOption(languageOption);
-    const filteredAnswers = getFilteredAnswers(diaInput);
+    const filteredAnswers = getFilteredAnswers(dayOption);
 
     const payload = {
       languageOption: finalLanguageOption,
@@ -74,7 +74,7 @@ export function handleSubmit(elements) {
 
 function verifyFormElements(
   selectedFile,
-  diaInput,
+  dayOption,
   languageField,
   languageOption,
   manualExamYear
@@ -85,7 +85,7 @@ function verifyFormElements(
     return false;
   }
 
-  if (!diaInput) {
+  if (!dayOption) {
     alert("Marque 1º ou 2º dia.");
     return false;
   }
@@ -115,8 +115,8 @@ function getFinalLanguageOption(languageOption) {
   return finalLanguageOption;
 }
 
-function getFilteredAnswers(diaInput) {
-  const [start, end] = diaInput.value === "1" ? [1, 90] : [91, 180];
+function getFilteredAnswers(dayOption) {
+  const [start, end] = dayOption.value === "1" ? [1, 90] : [91, 180];
   const filteredAnswers = {};
 
   for (let i = start; i <= end; i++) {
