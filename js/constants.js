@@ -8,3 +8,8 @@ export const ERROR_MESSAGES = {
     "Parâmetros inválidos. Verifique as alternativas estão marcadas.",
   UNKNOWN_ERROR: "Erro desconhecido. Tente novamente mais tarde.",
 };
+
+export const API = {
+  BASE_URL: "http://localhost:8080",
+  CORRECT_EXAM: "/api/v1/correct-exam",
+};

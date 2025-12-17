@@ -1,6 +1,6 @@
 import { showResult, showError, hideResult } from "./result.js";
 import { userAnswers } from "./state.js";
-import { ERROR_MESSAGES } from "./constants.js";
+import { ERROR_MESSAGES, API } from "./constants.js";
 
 export function handleSubmit(elements) {
   return async function (ev) {
@@ -50,7 +50,7 @@ export function handleSubmit(elements) {
       submitBtn.textContent = "Processando...";
 
       const response = await fetch(
-        "http://localhost:8080/api/v1/correct-exam",
+        `${API.BASE_URL}${API.CORRECT_EXAM}`,
         {
           method: "POST",
           body: fd,
