@@ -277,7 +277,8 @@ label {
 }
 
 input[type="number"] {
-  width: 100px;
+  -moz-appearance: textfield;
+  width: 125px;
   padding: 0.75rem;
   border: 2px solid #e2e8f0;
   border-radius: 10px;
