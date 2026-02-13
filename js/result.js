@@ -11,6 +11,7 @@ export function showResult(data, result) {
     wrongAnswers,
     expectedAnswers,
     cancelledQuestions,
+    percentageCorrect
   } = data;
 
   const countsHTML = createCountsSummary({
@@ -19,6 +20,7 @@ export function showResult(data, result) {
     totalCanceled,
     totalAnswered,
     totalQuestions,
+    percentageCorrect
   });
 
   const errorsListHTML = createErrorsList(wrongAnswers, expectedAnswers, wrongCount);
@@ -35,7 +37,7 @@ export function showResult(data, result) {
   `;
 }
 
-function createCountsSummary({ correctCount, wrongCount, totalCanceled, totalAnswered, totalQuestions }) {
+function createCountsSummary({ correctCount, wrongCount, totalCanceled, totalAnswered, totalQuestions, percentageCorrect }) {
   return `
     <div class="counts-summary">
       <div class="count-card count-correct">
@@ -53,6 +55,10 @@ function createCountsSummary({ correctCount, wrongCount, totalCanceled, totalAns
       <div class="count-card count-answered">
         <h3>Respondidas 📝</h3>
         <p>${totalAnswered} de ${totalQuestions}</p>
+      </div>
+      <div class="count-card percentage-correct">
+        <h3>Porcentagem de acertos 📊</h3>
+        <p>${percentageCorrect ?? 0}%</p>
       </div>
     </div>
   `;
